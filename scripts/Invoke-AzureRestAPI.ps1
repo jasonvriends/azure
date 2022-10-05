@@ -3,8 +3,8 @@
 Call any Azure REST API from PowerShell
 
 .DESCRIPTION
-Azure CLI, Azure PowerShell, and Terraform are not always updated at the same cadence as the Azure REST APIs.
-Using this PowerShell script you can call any Azure REST API, and leave the hard work to the script.
+Azure CLI, Azure PowerShell, and Terraform are not updated at the same cadence as their corresponding Azure REST API.
+Using this PowerShell script, you can call any Azure REST API, and leave the hard work to the script.
 
 .EXAMPLE
 Invoke-AzureRestAPI
