@@ -16,7 +16,6 @@ None
 System.String
 
 .NOTES
-
 Create an Application Registration and grant it the required RBAC role. 
 In the example below, grant the  Reader RBAC role to the Application Registration on the Root Tenant Management Group or required Azure Subscriptions.
 
@@ -117,14 +116,12 @@ Function Get-BearerToken {
 This example returns all Azure Subscriptions that your Service Principal has access to. You can replace the Uri with any Azure REST API.
 #>
 
-# Authenticate to Azure AD with the Service Principal if the bearer token expired
-Get-BearerToken -TenantId $TenantId -ApplicationID $ApplicationID -ClientSecret $ClientSecret -Resource "https://management.core.windows.net/"
-
 # https://learn.microsoft.com/en-us/rest/api/resources/subscriptions/list?tabs=HTTP
 
-# Get initial page
+# Get initial results
 Try {
 
+    Get-BearerToken -TenantId $TenantId -ApplicationID $ApplicationID -ClientSecret $ClientSecret -Resource "https://management.core.windows.net/"
     $Results += Invoke-RestMethod -Method "GET" -Header $Header -Uri "https://management.azure.com/subscriptions?api-version=2020-01-01"
     $Pages = $Results."@nextLink"
 
@@ -138,10 +135,11 @@ Try {
 
 }
 
-# Get subsuquent pages
+# Get subsuquent results
 Try {
 
     While($Null -ne $Pages) {
+        Get-BearerToken -TenantId $TenantId -ApplicationID $ApplicationID -ClientSecret $ClientSecret -Resource "https://management.core.windows.net/"
         $MoreResults = Invoke-RestMethod -Method "GET" -Header $Header -Uri $Pages
         If ($Pages) {
             $Pages = $Additional."@nextLink"
