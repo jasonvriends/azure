@@ -36,7 +36,8 @@ $ApplicationID  = "" # <insert your Application ID>
 $ClientSecret   = "" # <insert the value of you created secret>
 
 <# Global Variables #>
-$Header = @{}
+$Header  = @{}
+$Results = @()
 
 Function Get-BearerToken {
     <#
@@ -120,5 +121,42 @@ This example returns all Azure Subscriptions that your Service Principal has acc
 Get-BearerToken -TenantId $TenantId -ApplicationID $ApplicationID -ClientSecret $ClientSecret -Resource "https://management.core.windows.net/"
 
 # https://learn.microsoft.com/en-us/rest/api/resources/subscriptions/list?tabs=HTTP
-$Subscriptions = (Invoke-RestMethod -Method "GET" -Header $Header -Uri "https://management.azure.com/subscriptions?api-version=2020-01-01").Value
-$Subscriptions | fl
+
+# Get initial page
+Try {
+
+    $Results += Invoke-RestMethod -Method "GET" -Header $Header -Uri "https://management.azure.com/subscriptions?api-version=2020-01-01"
+    $Pages = $Results."@nextLink"
+
+} Catch {
+
+    If ($_.ErrorDetails.Message) {
+        Write-Host $_.ErrorDetails.Message
+    } Else {
+        Write-Host $_
+    }
+
+}
+
+# Get subsuquent pages
+Try {
+
+    While($Null -ne $Pages) {
+        $MoreResults = Invoke-RestMethod -Method "GET" -Header $Header -Uri $Pages
+        If ($Pages) {
+            $Pages = $Additional."@nextLink"
+        }
+        $Results += $MoreResults
+    }
+
+} Catch {
+
+    If ($_.ErrorDetails.Message) {
+        Write-Host $_.ErrorDetails.Message
+    } Else {
+        Write-Host $_
+    }
+
+}
+
+$Results.Value | Format-List
