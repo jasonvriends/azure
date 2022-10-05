@@ -111,6 +111,7 @@ Function Get-BearerToken {
     }
     
 }
+
 <# 
 This example returns all Azure Subscriptions that your Service Principal has access to. You can replace the Uri with any Azure REST API.
 #>
