@@ -35,7 +35,7 @@ resource "azurerm_network_security_group" "nsg_webhosting" {
     priority                   = 100
     direction                  = "Inbound"
     access                     = "Allow"
-    protocol                   = "Tcp"
+    protocol                   = "*"
     source_port_range          = "*"
     destination_port_range     = "53"
     source_address_prefix      = "*"
@@ -44,7 +44,7 @@ resource "azurerm_network_security_group" "nsg_webhosting" {
 
   security_rule {
     name                       = "http"
-    priority                   = 105
+    priority                   = 101
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
@@ -56,19 +56,44 @@ resource "azurerm_network_security_group" "nsg_webhosting" {
 
   security_rule {
     name                       = "https"
-    priority                   = 110
+    priority                   = 102
     direction                  = "Inbound"
     access                     = "Allow"
-    protocol                   = "Tcp"
+    protocol                   = "*"
     source_port_range          = "*"
     destination_port_range     = "443"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }  
 
+  security_rule {
+    name                       = "ftp"
+    priority                   = 103
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "tcp"
+    source_port_range          = "*"
+    destination_port_ranges    = ["21","40110-40210"]
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }  
+
+  security_rule {
+    name                       = "mail"
+    priority                   = 104
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "tcp"
+    source_port_range          = "*"
+    destination_port_ranges    = ["25","587","465","110","143","993"]
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }  
+
+
    security_rule {
     name                       = "ssh"
-    priority                   = 120
+    priority                   = 150
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
@@ -79,8 +104,8 @@ resource "azurerm_network_security_group" "nsg_webhosting" {
   }  
 
   security_rule {
-    name                       = "panel"
-    priority                   = 125
+    name                       = "cyberpanel"
+    priority                   = 160
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
@@ -91,14 +116,14 @@ resource "azurerm_network_security_group" "nsg_webhosting" {
   }  
 
   security_rule {
-    name                       = "webadmin"
-    priority                   = 130
+    name                       = "cpanel"
+    priority                   = 170
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "7080"
-    source_address_prefix      = "${var.remoteaccess}"
+    source_address_prefix      = "*"
     destination_address_prefix = "*"
   }  
 
