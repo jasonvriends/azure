@@ -22,3 +22,15 @@ Update ```variable.tf``` to your desired values.
 Execute ```terraform plan``` and verify the results.
 
 Execute ```terraform apply``` if you are satisified with the output of the plan.
+
+SSH into the Virtual Machine using:
+```
+SSH vmadmin@ip-address -i <path_to_private_key>
+```
+
+Obtain the Cyber Panel admin credentials using:
+```
+cat /root/.litespeed_password
+```
+
+Login to the Web Admin Panel using ```https://ip-address:8090```
