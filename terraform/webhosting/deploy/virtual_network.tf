@@ -71,7 +71,7 @@ resource "azurerm_network_security_group" "nsg_webhosting" {
     priority                   = 103
     direction                  = "Inbound"
     access                     = "Allow"
-    protocol                   = "tcp"
+    protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_ranges    = ["21","40110-40210"]
     source_address_prefix      = "*"
@@ -83,7 +83,7 @@ resource "azurerm_network_security_group" "nsg_webhosting" {
     priority                   = 104
     direction                  = "Inbound"
     access                     = "Allow"
-    protocol                   = "tcp"
+    protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_ranges    = ["25","587","465","110","143","993"]
     source_address_prefix      = "*"
