@@ -2,57 +2,117 @@
 
 This repo contains documentation and Terraform to deploy an Infrastructure as Service web hosting platform for friends and family in Microsoft Azure.
 
+## Background
+
+### CyberPanel
+
 [CyberPanel](https://cyberpanel.net/) is a free web hosting control Panel to deliver speed and security, developed by OpenLiteSpeed and available free of charge to the community.
 
-If your goal exceeds friends and family, I would leverage [CloudLinux](https://www.cloudlinux.com/) + CyberPanel.
-- In a normal shared hosting environment the resources available on a server that is the CPU, I/O and RAM resources are fully accessible to all accounts on that server and there is no hard and fast demarcation on the usage of these resources. The clients are expected to share these resources equally. However, sometimes rogue scripts/programs on one clients account to take up disproportionately large amount of resources, thus leading to the server getting overloaded and a general lack of performance, thereby resulting in all the accounts seem slow.
-- CloudLinux creates a virtual environment for each individual account on a shared server and allows us to limit the amount of resources any single account can use similar to a VPS environment and therefore no single account can take up every all CPU resources on the server.
+### AlmaLinux
+
+[AlmaLinux](https://almalinux.org/) is an Open Source, community owned and governed, forever-free enterprise Linux distribution, focused on long-term stability, providing a robust production-grade platform. AlmaLinux OS is 1:1 binary compatible with RHEL® and pre-Stream CentOS.
+
+### Shared Hosting
+
+In a normal shared hosting environment the resources available on a server that is the CPU, I/O and RAM resources are fully accessible to all accounts on that server, and there is no hard and fast demarcation on the usage of these resources. The clients are expected to share these resources equally. However, sometimes rogue scripts/programs on one clients account to take up disproportionately large amount of resources, thus leading to the server getting overloaded and a general lack of performance, thereby resulting in all the accounts seem slow.
+
+If you plan to leverage this solution beyond friends and family, I would suggest [CloudLinux](https://www.cloudlinux.com/) + CyberPanel. CloudLinux creates a virtual environment for each individual account on a shared server and allows you to limit the amount of resources any single account can use similar to a VPS environment and therefore no single account can take up every all CPU resources on the server. This brings a lot of benefits to the table for both your clients and you as a host.
 
 ## Requirements
 
 - Microsoft Azure Subscription
 - [Hashicorp Terraform](https://www.terraform.io/downloads)
-- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
 
-## CyberPanel Deployment
+## Azure Deployment
 
-- Generate SSH key:
-  ```
-  ssh-keygen -t rsa -f ~/.ssh/id_rsa -C cyberpanel -b 4096 -q -P "<password-to-use-the-key>"
-  ```
+An SSH key is an access credential in the SSH protocol. Its function is similar to that of user names and passwords, but the keys are primarily used for automated processes and for implementing single sign-on by system administrators and power users. Execute the following command to create a SSH key.
 
-- Create a clone/copy of an existing repository into a new directory:
-  ```
-  git clone https://github.com/jasonvriends/azure.git
-  ```
+```
+ssh-keygen -t rsa -f ~/.ssh/id_rsa -C cyberpanel -b 4096 -q -P "<password>"
+```
 
-- [Authenticate Terraform to Azure using a Service Principal with a Client Secret](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/guides/service_principal_client_secret)
+Git clone is a way to download a git project from an online repository to your computer. Execute the following command to clone this repoistory to your local computer.
 
-- Update ```variable.tf``` to your desired values.
+```
+git clone https://github.com/jasonvriends/azure.git
+```
 
-- Execute ```terraform plan``` and verify the results.
+[Authenticate Terraform to Azure using a Service Principal with a Client Secret](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/guides/service_principal_client_secret)
 
-- Execute ```terraform apply``` if you are satisified with the output of the plan.
+Update ```variable.tf``` to your desired values.
 
-- SSH into the Virtual Machine using:
-  ```
-  SSH username-in-variable.tf@ip-address -i <path_to_private_key>
-  ```
+Execute ```terraform plan``` and verify the results.
 
-- Upgrade to the latest version of CyberPanel using:
-  ```
-  sudo su - -c "sh <(curl https://raw.githubusercontent.com/usmannasir/cyberpanel/stable/preUpgrade.sh || wget -O - https://raw.githubusercontent.com/usmannasir/cyberpanel/stable/preUpgrade.sh)"
-  ```
+Execute ```terraform apply``` if you are satisified with the output of the plan.
 
-## CyberPanel Configuration
+## AlmaLinux Configuraiton
+
+### Secure Shell
+
+SSH into the Virtual Machine using:
+
+```
+SSH <username>@<ip-address> -i ~/.ssh/id_rsa
+```
+
+### Update Packages:
+
+DNF is a software package manager that installs, updates, and removes packages on AlmaLinux and is the successor to YUM (Yellow-Dog Updater Modified). We can update the existing installed packages using dnf.
+
+```
+sudo dnf update -y
+```
+
+### Set up Automatic Updates
+
+The dnf-automatic package is a component that allows automatic download and installation of updates. It can automatically monitor and report, via e-mail, the availability of updates or send a log about downloaded packages and installed updates. Install the dnf-automatic package using the command below.
+
+```
+sudo dnf install dnf-automatic -y
+```
+
+The operation of the tool is usually controlled by the configuration file ```/etc/dnf/automatic.conf```. Run the following sed commands to change the default settings to our desired ones.
+
+```
+# Restrict updates to security
+sudo sed -i 's/upgrade_type = default/upgrade_type = security/g' /etc/dnf/automatic.conf
+
+# Download and install updates
+sudo sed -i 's/apply_updates = no/apply_updates = yes/g' /etc/dnf/automatic.conf
+```
+
+Lastly, we need to enable the automatic update timer using:
+```
+sudo systemctl enable --now dnf-automatic.timer
+```
+
+## CyberPanel Installation
+
+Install CyberPanel using the following command:
+```
+sudo su - -c "sh <(curl https://cyberpanel.net/install.sh || wget -O - https://cyberpanel.net/install.sh)"
+```
+Choose **1** and Enter to **confirm installation**.
+
+Choose **1** to install **CyberPanel with OpenLiteSpeed**.
+
+Choose **Y** to install **Full service for CyberPanel**
+
+Choose **N** to skip remote MySQL setup and continue with local MySQL server setup.
+
+Press **Enter** to continue with latest version of MySQL.
+
+Choose **R** to randomly generate your admin password.
+
+Choose **Y** to install Memcached.
+
+Choose **Y** to install Redis.
+
+Choose **Y** to install WatchDog.
+
+## Cyber Panel Configuration
 
 Login to the Admin cPanel using https://ip-address:8090
-
-### Enable Automatic Security Updates
-```
-sudo apt-get install unattended-upgrades
-sudo dpkg-reconfigure  unattended-upgrades
-```
 
 ### Security
 

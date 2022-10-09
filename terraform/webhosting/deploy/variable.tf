@@ -1,11 +1,5 @@
 # Mandatory
 
-variable "remoteaccess" {
-   description = "IP address for remote management"
-   type        = string
-   default     = ""
-}
-
 variable "tenant_id" {
    description = "Azure Tenant ID"
    type        = string
@@ -31,6 +25,13 @@ variable "client_secret" {
 }
 
 # Optional
+
+variable "remoteaccess" {
+   description = "IP address for remote management"
+   type        = string
+   default     = "" # defaults to your public IP if not specified
+}
+
 variable "region" {
    description = "Azure region for resources"
    type        = string

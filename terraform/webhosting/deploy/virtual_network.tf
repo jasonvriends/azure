@@ -1,3 +1,9 @@
+# https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http
+
+data "http" "clientip" {
+  url = "https://ipv4.icanhazip.com/"
+}
+
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network
 
 resource "azurerm_virtual_network" "vnet_webhosting" {
@@ -99,7 +105,7 @@ resource "azurerm_network_security_group" "nsg_webhosting" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
-    source_address_prefix      = "${var.remoteaccess}"
+    source_address_prefix      = var.remoteaccess == "" ? chomp(data.http.clientip.response_body) : var.remoteaccess
     destination_address_prefix = "*"
   }  
 
@@ -111,7 +117,7 @@ resource "azurerm_network_security_group" "nsg_webhosting" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "8090"
-    source_address_prefix      = "${var.remoteaccess}"
+    source_address_prefix      = var.remoteaccess == "" ? chomp(data.http.clientip.response_body) : var.remoteaccess
     destination_address_prefix = "*"
   }  
 
