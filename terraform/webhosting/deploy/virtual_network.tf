@@ -104,7 +104,7 @@ resource "azurerm_network_security_group" "nsg_webhosting" {
   }  
 
   security_rule {
-    name                       = "cyberpanel"
+    name                       = "admin-cpanel"
     priority                   = 160
     direction                  = "Inbound"
     access                     = "Allow"
@@ -116,7 +116,7 @@ resource "azurerm_network_security_group" "nsg_webhosting" {
   }  
 
   security_rule {
-    name                       = "cpanel"
+    name                       = "user-cpanel"
     priority                   = 170
     direction                  = "Inbound"
     access                     = "Allow"

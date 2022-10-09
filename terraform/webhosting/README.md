@@ -8,29 +8,54 @@ CyberPanel is a free web hosting control Panel to deliver speed and security, de
 - [Hashicorp Terraform](https://www.terraform.io/downloads)
 - [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
 
-## Deployment Instructions
+## CyberPanel Deployment
 
-Clone the repo using:
-```
-git clone https://github.com/jasonvriends/azure.git
-```
+- Generate SSH key:
+  ```
+  ssh-keygen -t rsa -f ~/.ssh/id_rsa -C cyberpanel -b 4096 -q -P "<password-to-use-the-key>"
+  ```
 
-[Authenticate Terraform to Azure using a Service Principal with a Client Secret](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/guides/service_principal_client_secret)
+- Create a clone/copy of an existing repository into a new directory:
+  ```
+  git clone https://github.com/jasonvriends/azure.git
+  ```
 
-Update ```variable.tf``` to your desired values.
+- [Authenticate Terraform to Azure using a Service Principal with a Client Secret](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/guides/service_principal_client_secret)
 
-Execute ```terraform plan``` and verify the results.
+- Update ```variable.tf``` to your desired values.
 
-Execute ```terraform apply``` if you are satisified with the output of the plan.
+- Execute ```terraform plan``` and verify the results.
 
-SSH into the Virtual Machine using:
-```
-SSH vmadmin@ip-address -i <path_to_private_key>
-```
+- Execute ```terraform apply``` if you are satisified with the output of the plan.
 
-Obtain the Cyber Panel admin credentials using:
-```
-cat /root/.litespeed_password
-```
+- SSH into the Virtual Machine using:
+  ```
+  SSH username-in-variable.tf@ip-address -i <path_to_private_key>
+  ```
 
-Login to the Web Admin Panel using ```https://ip-address:8090```
+- Upgrade to the latest version of CyberPanel using:
+  ```
+  sudo su - -c "sh <(curl https://raw.githubusercontent.com/usmannasir/cyberpanel/stable/preUpgrade.sh || wget -O - https://raw.githubusercontent.com/usmannasir/cyberpanel/stable/preUpgrade.sh)"
+  ```
+
+## CyberPanel Reference
+
+- [Quickstart guide](https://docs.litespeedtech.com/cloud/images/cyberpanel/)
+
+- Admin cPanel: https://ip-address:8090
+
+- User cPanel: https://ip-address:7090
+
+- phpMyAdmin: https://ip-address:8090/dataBases/phpMyAdmin
+
+- Admin password:
+  ```
+  sudo cat /root/.litespeed_password
+  ```
+
+- Mysql user password
+  ```
+  sudo cat /root/.db_password
+  ```
+
+- [Upgrade CyberPanel](https://docs.litespeedtech.com/cloud/cyberpanel/#how-do-i-upgrade-cyberpanel) to the latest version
