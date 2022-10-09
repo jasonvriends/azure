@@ -38,6 +38,33 @@ CyberPanel is a free web hosting control Panel to deliver speed and security, de
   sudo su - -c "sh <(curl https://raw.githubusercontent.com/usmannasir/cyberpanel/stable/preUpgrade.sh || wget -O - https://raw.githubusercontent.com/usmannasir/cyberpanel/stable/preUpgrade.sh)"
   ```
 
+## CyberPanel Configuration
+
+Login to the Admin cPanel using https://ip-address:8090
+
+### Establish Weekly Full Backups
+
+- Select **Backup** -> **Add/Delete Destination**
+  - Under **Set up Backup Destinations**
+    - Select Type: **Local**
+    - Name: **Archive**
+    - Local Path: **/archive**
+    - Select **Add Destination**
+
+- Select **Backup** -> **Schedule Backup**
+  - Under **Create New Backup Schedule**
+    - Select Destination: **Archive**
+    - Name: **Weekly Full Backup**
+    - Select Backup Frequency: **Weekly**
+    - Select Backup Retention: **4**
+    - Select **Add Schedule**
+
+- Select **Backup** -> **Schedule Backup**
+  - Under **Manage Existing Backup Schedules**
+    - Select Destination: **Archive**
+    - Select Job: Weekly F**ull Backup**
+    - Add Sites for Backup: **All**
+
 ## CyberPanel Reference
 
 - [Quickstart guide](https://docs.litespeedtech.com/cloud/images/cyberpanel/)
