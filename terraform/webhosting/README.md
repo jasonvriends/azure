@@ -58,15 +58,19 @@ sudo dpkg-reconfigure  unattended-upgrades
 
 #### ModSecurity
 
-- Select **Security** -> **ModSecurity Conf**
-  - Under **ModSecurity**
-     - Select **Install Now**
+ModSecurity (ModSec) is an Apache module that helps protect your website from external attacks. As a web application firewall (WAF), ModSecurity detects and blocks unwanted intrusions into your site.
 
 - Select **Security** -> **ModSecurity Conf**
   - Under **ModSecurity**
      - Select **Install Now**
 
-#### CSF
+- Select **Security** -> **ModSecurity Conf**
+  - Under **ModSecurity**
+     - Select **Install Now**
+
+#### ConfigServer Security and Firewall
+
+A Stateful Packet Inspection (SPI) firewall, Login/Intrusion Detection and Security application for Linux servers.
 
 - Select **Security** -> **CSF**
   - Under **CSF**
