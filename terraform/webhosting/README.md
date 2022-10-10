@@ -107,6 +107,7 @@ sudo systemctl enable --now dnf-automatic.timer
 ## CyberPanel Installation
 
 Install CyberPanel using the following command:
+
 ```
 sudo su - -c "sh <(curl https://cyberpanel.net/install.sh || wget -O - https://cyberpanel.net/install.sh)"
 ```
@@ -219,8 +220,20 @@ Create Nameservers in your Domain Registar
 
 ## SendGrid
 
-Microsoft restricts access to SMTP on non Enterprise Enrollments. If you would like to leverage email on your server, [Integrate SendGrid with Postfix](https://docs.sendgrid.com/for-developers/sending-email/postfix).
+Outbound email messages that are sent directly to external domains (such as outlook.com and gmail.com) from a virtual machine (VM) are made available only to certain subscription types in Microsoft Azure.
+
+If you would like your friends and family to receive email messages from the server (i.e. WordPress installation information), have a look at [Integrating SendGrid with Postfix](https://docs.sendgrid.com/for-developers/sending-email/postfix).
+
+In addition to the [Integrating SendGrid with Postfix](https://docs.sendgrid.com/for-developers/sending-email/postfix) steps, I had to do the following:
+
+- Define a DNS name on the Azure Public IP address (i.e. ```<dns-name>.canadacentral.cloudapp.azure.com```).
+- Modify ```nano /etc/postfix/main.cf``` as per the following: 
+  - mydestination = localhost, localhost.localdomain, ```<dns-name>.canadacentral.cloudapp.azure.com```
+  - myhostname = ```<dns-name>.canadacentral.cloudapp.azure.com```
+  - mynetworks = 127.0.0.0/8, ```<public-ip>/32```, ```<private-ip>/32```
+
+SendGrid Free gives you 100 emails per day.
 
 ## Troubleshooting
 
-[How To Fix Invalid Configuration Value: failovermethod=priority in /etc/yum.repos.d/fedora.rep](https://communicode.io/how-to-fix-failovermethod-error-fedora/)
+Sometimes after installing CyberPanel you will receive **Invalid Configuration Value** errors when running **sudo dnf update -y**. Refer to [How To Fix Invalid Configuration Value](https://communicode.io/how-to-fix-failovermethod-error-fedora/) to resolve the error.
