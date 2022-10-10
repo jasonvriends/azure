@@ -206,7 +206,7 @@ Create Nameservers in your Domain Registar
     - Select Job: Weekly **Full Backup**
     - Add Sites for Backup: **All**
 
-## CyberPanel Reference
+## Documentation
 
 - [Quickstart guide](https://docs.litespeedtech.com/cloud/images/cyberpanel/)
 
@@ -218,7 +218,9 @@ Create Nameservers in your Domain Registar
 
 - [Upgrade CyberPanel](https://docs.litespeedtech.com/cloud/cyberpanel/#how-do-i-upgrade-cyberpanel) to the latest version
 
-## SendGrid
+## Additional Configuration
+
+### SMTP
 
 Outbound email messages that are sent directly to external domains (such as outlook.com and gmail.com) from a virtual machine (VM) are made available only to certain subscription types in Microsoft Azure.
 
@@ -233,6 +235,13 @@ In addition to the [Integrating SendGrid with Postfix](https://docs.sendgrid.com
   - mynetworks = 127.0.0.0/8, ```<public-ip>/32```, ```<private-ip>/32```
 
 SendGrid Free gives you 100 emails per day.
+
+### MFA
+
+CyberPanel has built-in MFA. You should follow these steps to enable it for your admin user:
+- Select **Users** -> **Modify User**
+- Check **2FA**
+- Scan with the Google/Microsoft Authenticator app
 
 ## Troubleshooting
 
