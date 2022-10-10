@@ -1,0 +1,17 @@
+#cloud-config
+
+# https://cloudinit.readthedocs.io/en/latest/topics/examples.html
+# Validate: cloud-init devel schema --config-file <cloud-init.txt>
+
+# Update existing packages
+package_upgrade: true
+
+# Install new packages
+packages:
+    - dnf-automatic
+
+# Configure Automatic Security Updates using dnf-automatic
+runcmd:
+  - sed -i 's/upgrade_type = default/upgrade_type = security/g' /etc/dnf/automatic.conf
+  - sed -i 's/apply_updates = no/apply_updates = yes/g' /etc/dnf/automatic.conf
+  - systemctl enable --now dnf-automatic.timer

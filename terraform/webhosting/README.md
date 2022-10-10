@@ -21,9 +21,28 @@ If you plan to leverage this solution beyond friends and family, I would suggest
 ## Requirements
 
 - Microsoft Azure Subscription
-- [Hashicorp Terraform](https://www.terraform.io/downloads)
+- RHEL/Rocky/AlmaLinux 8.5 with the following installed:
+  - [Git](https://linuxconfig.org/how-to-install-git-on-almalinux)
+  - [Hashicorp Terraform](https://www.terraform.io/downloads)
 
 ## Azure Deployment
+
+### Overview
+
+The following infrastructure is deployed:
+| Name            | Type                   | Location       |
+|-----------------|------------------------|----------------|
+| cyberpanel-rg   | Resource Group         | Canada Central |
+| cyberpanel-vnet | Virtual Network        | Canada Central |
+| cyberpanel-vm   | Virtual Machine        | Canada Central |
+| cyberpanel-pip  | Public IP address      | Canada Central |
+| cyberpanel-os   | Disk                   | Canada Central |
+| cyberpanel-nsg  | Network security group | Canada Central |
+| cyberpanel-nic  | Network Interface      | Canada Central |
+
+In addition, the Virtual Machine is automatically configured to install security patches daily using dnf-automatic.
+
+### Deployment Steps
 
 An SSH key is an access credential in the SSH protocol. Its function is similar to that of user names and passwords, but the keys are primarily used for automated processes and for implementing single sign-on by system administrators and power users. Execute the following command to create a SSH key.
 
@@ -59,30 +78,29 @@ SSH <username>@<ip-address> -i ~/.ssh/id_rsa
 
 DNF is a software package manager that installs, updates, and removes packages on AlmaLinux and is the successor to YUM (Yellow-Dog Updater Modified). We can update the existing installed packages using dnf.
 
+**Cloud Init automatically executes the following commands for you. However, the commands are included for your reference.**
+
 ```
 sudo dnf update -y
 ```
 
 ### Set up Automatic Updates
 
-The dnf-automatic package is a component that allows automatic download and installation of updates. It can automatically monitor and report, via e-mail, the availability of updates or send a log about downloaded packages and installed updates. Install the dnf-automatic package using the command below.
+The dnf-automatic package is a component that allows automatic download and installation of updates. It can automatically monitor and report, via e-mail, the availability of updates or send a log about downloaded packages and installed updates.
+
+**Cloud Init automatically executes the following commands for you. However, the commands are included for your reference.**
 
 ```
+ # Install the dnf-automatic package
 sudo dnf install dnf-automatic -y
-```
 
-The operation of the tool is usually controlled by the configuration file ```/etc/dnf/automatic.conf```. Run the following sed commands to change the default settings to our desired ones.
-
-```
 # Restrict updates to security
 sudo sed -i 's/upgrade_type = default/upgrade_type = security/g' /etc/dnf/automatic.conf
 
-# Download and install updates
+# Apply downloaded updates
 sudo sed -i 's/apply_updates = no/apply_updates = yes/g' /etc/dnf/automatic.conf
-```
 
-Lastly, we need to enable the automatic update timer using:
-```
+# Enable the automatic update timer
 sudo systemctl enable --now dnf-automatic.timer
 ```
 
@@ -92,31 +110,31 @@ Install CyberPanel using the following command:
 ```
 sudo su - -c "sh <(curl https://cyberpanel.net/install.sh || wget -O - https://cyberpanel.net/install.sh)"
 ```
-Choose **1** and Enter to **confirm installation**.
+Choose **1** and **Enter** to **confirm installation**.
 
-Choose **1** to install **CyberPanel with OpenLiteSpeed**.
+Choose **1** and **Enter** to install **CyberPanel with OpenLiteSpeed**.
 
-Choose **Y** to install **Full service for CyberPanel**
+Choose **Y** and **Enter** to install **Full service for CyberPanel**
 
-Choose **N** to skip remote MySQL setup and continue with local MySQL server setup.
+Choose **N** and **Enter** to skip remote MySQL setup and continue with local MySQL server setup.
 
 Press **Enter** to continue with latest version of MySQL.
 
-Choose **R** to randomly generate your admin password.
+Choose **S** and **Enter** to specify your admin password.
 
-Choose **Y** to install Memcached.
+Choose **Y** and **Enter** to install Memcached.
 
-Choose **Y** to install Redis.
+Choose **Y** and **Enter** to install Redis.
 
-Choose **Y** to install WatchDog.
+Choose **Y** and **Enter** to install WatchDog.
+
+Choose **Y** and **Enter** to restart.
 
 ## Cyber Panel Configuration
 
-Login to the Admin cPanel using https://ip-address:8090
+Login to CyberPanel using https://ip-address:8090
 
-### Security
-
-#### ModSecurity
+### ModSecurity
 
 ModSecurity (ModSec) is an Apache module that helps protect your website from external attacks. As a web application firewall (WAF), ModSecurity detects and blocks unwanted intrusions into your site.
 
@@ -124,11 +142,11 @@ ModSecurity (ModSec) is an Apache module that helps protect your website from ex
   - Under **ModSecurity**
      - Select **Install Now**
 
-- Select **Security** -> **ModSecurity Conf**
-  - Under **ModSecurity**
-     - Select **Install Now**
+- Select **Security** -> **ModSecurity Rule Packs**
+  - Under **ModSecurity Rules Packages**
+     - Enable **OWASP ModSecurity Core Rules**
 
-#### ConfigServer Security and Firewall
+### ConfigServer Security and Firewall
 
 A Stateful Packet Inspection (SPI) firewall, Login/Intrusion Detection and Security application for Linux servers.
 
@@ -138,8 +156,7 @@ A Stateful Packet Inspection (SPI) firewall, Login/Intrusion Detection and Secur
 
 ### DNS
 
-#### Create Nameservers in CyberPanel
-
+Create Nameservers in CyberPanel
 - Select **DNS** -> **Create Nameserver**
   - Under **Details** specify
     - Domain Name: **yourdomain.com**
@@ -149,15 +166,13 @@ A Stateful Packet Inspection (SPI) firewall, Login/Intrusion Detection and Secur
     - IP Address: **IP of your server**
     - Select **Create Nameserver**
 
-#### Configure Default Nameservers
-
+Configure Default Nameservers
 - Select **DNS** -> **Config Default Nameservers**
   - Under **Details** specify
     - First Nameserver: **ns1.yourdomain.com**
     - Second Nameserver: **ns2.yourdomain.com**
 
-#### Create Nameservers in your Domain Registar
-
+Create Nameservers in your Domain Registar
 - Log in to Domain Registars control panel. For GoDaddy:
 - Select **Domain**
 - Select **Manage DNS**
@@ -165,6 +180,7 @@ A Stateful Packet Inspection (SPI) firewall, Login/Intrusion Detection and Secur
 - Select **Add**
 - Input **ns1.yourdomain.com** then the servers **ip address**
 - Input **ns2.yourdomain.com** then the servers **ip address**
+
 
 ### Backups
 
@@ -186,7 +202,7 @@ A Stateful Packet Inspection (SPI) firewall, Login/Intrusion Detection and Secur
 - Select **Backup** -> **Schedule Backup**
   - Under **Manage Existing Backup Schedules**
     - Select Destination: **Archive**
-    - Select Job: Weekly F**ull Backup**
+    - Select Job: Weekly **Full Backup**
     - Add Sites for Backup: **All**
 
 ## CyberPanel Reference
@@ -199,14 +215,12 @@ A Stateful Packet Inspection (SPI) firewall, Login/Intrusion Detection and Secur
 
 - phpMyAdmin: https://ip-address:8090/dataBases/phpMyAdmin
 
-- Admin password:
-  ```
-  sudo cat /root/.litespeed_password
-  ```
-
-- Mysql user password
-  ```
-  sudo cat /root/.db_password
-  ```
-
 - [Upgrade CyberPanel](https://docs.litespeedtech.com/cloud/cyberpanel/#how-do-i-upgrade-cyberpanel) to the latest version
+
+## SendGrid
+
+Microsoft restricts access to SMTP on non Enterprise Enrollments. If you would like to leverage email on your server, [Integrate SendGrid with Postfix](https://docs.sendgrid.com/for-developers/sending-email/postfix).
+
+## Troubleshooting
+
+[How To Fix Invalid Configuration Value: failovermethod=priority in /etc/yum.repos.d/fedora.rep](https://communicode.io/how-to-fix-failovermethod-error-fedora/)
