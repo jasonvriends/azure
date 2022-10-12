@@ -218,6 +218,8 @@ Create Nameservers in your Domain Registar
 
 - [Upgrade CyberPanel](https://docs.litespeedtech.com/cloud/cyberpanel/#how-do-i-upgrade-cyberpanel) to the latest version
 
+- [CyberPanel Command Line Interface](https://community.cyberpanel.net/t/cyberpanel-command-line-interface/30683/1)
+
 ## Additional Configuration
 
 ### SMTP
